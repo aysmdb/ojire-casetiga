@@ -15,4 +15,7 @@ func APIRoutes(a *fiber.App) {
 
 	route.Post("/user/login", handlers.LoginHandler)
 	route.Get("/user/:id", handlers.GetUserByIDHandler)
+
+	route.Post("/cart/add", handlers.AddToCartHandler)
+	route.Get("/cart/:user_id", handlers.GetCartByUserIDHandler)
 }
