@@ -18,6 +18,8 @@ func connectSqlite() {
 	}
 
 	database.DBConn.AutoMigrate(&models.Product{})
+	database.DBConn.AutoMigrate(&models.User{})
+	database.DBConn.AutoMigrate(&models.Cart{})
 }
 
 func main() {
