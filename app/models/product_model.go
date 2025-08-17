@@ -10,9 +10,11 @@ import (
 
 type Product struct {
 	gorm.Model
-	Name     string
-	Quantity int
-	Price    int
+	Name        string `json:"name"`
+	Quantity    int    `json:"quantity"`
+	Price       int    `json:"price"`
+	Description string `json:"description" gorm:"type:text"`
+	ImageURL    string `gorm:"default:'https://picsum.photos/200/300'"`
 }
 
 type CheckoutRequest struct {

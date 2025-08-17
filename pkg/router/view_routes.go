@@ -9,4 +9,7 @@ func ViewRoutes(a *fiber.App) {
 	a.Get("/", func(c *fiber.Ctx) error {
 		return c.Render("home/index", fiber.Map{}, "layouts/main")
 	})
+	a.Get("/login", func(c *fiber.Ctx) error {
+		return c.Render("auth/login", fiber.Map{}, "layouts/auth")
+	})
 }
