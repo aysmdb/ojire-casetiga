@@ -12,4 +12,7 @@ func APIRoutes(a *fiber.App) {
 
 	route.Get("/product/list", handlers.GetProducts)
 	route.Get("/product/:id", handlers.GetProductByID)
+
+	route.Post("/user/login", handlers.LoginHandler)
+	route.Get("/user/:id", handlers.GetUserByIDHandler)
 }

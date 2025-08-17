@@ -11,7 +11,15 @@ func SeedDB(c *fiber.Ctx) error {
 	if err != nil {
 		return c.JSON(fiber.Map{
 			"error":   true,
-			"message": "Failed to seed the DB",
+			"message": "Failed to seed product",
+		})
+	}
+
+	err = models.Seeduser()
+	if err != nil {
+		return c.JSON(fiber.Map{
+			"error":   true,
+			"message": "Failed to seed user",
 		})
 	}
 
