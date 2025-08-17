@@ -3,9 +3,14 @@ package handlers
 import (
 	"github.com/aysmdb/ojire-casetiga/app/models"
 	"github.com/gofiber/fiber/v2"
+	"github.com/golang-jwt/jwt/v5"
 )
 
 func AddToCartHandler(c *fiber.Ctx) error {
+	user := c.Locals("user").(*jwt.Token)
+	claims := user.Claims.(jwt.MapClaims)
+	userID := claims["user_id"].(uint)
+
 	r := new(models.CartRequest)
 	if err := c.BodyParser(r); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
@@ -14,7 +19,7 @@ func AddToCartHandler(c *fiber.Ctx) error {
 	}
 
 	cart := models.Cart{
-		UserID:    1,
+		UserID:    userID,
 		ProductID: r.ProductID,
 		Quantity:  r.Quantity,
 	}
@@ -32,14 +37,11 @@ func AddToCartHandler(c *fiber.Ctx) error {
 }
 
 func GetCartByUserIDHandler(c *fiber.Ctx) error {
-	userID, err := c.ParamsInt("user_id")
-	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"message": "Invalid user ID",
-		})
-	}
+	user := c.Locals("user").(*jwt.Token)
+	claims := user.Claims.(jwt.MapClaims)
+	userID := claims["user_id"].(uint)
 
-	cartItems, err := models.GetCartByUserID(uint(userID))
+	cartItems, err := models.GetCartByUserID(userID)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"message": "Failed to retrieve cart: " + err.Error(),
@@ -47,4 +49,24 @@ func GetCartByUserIDHandler(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(cartItems)
+}
+
+func CheckoutHandler(c *fiber.Ctx) error {
+	var checkoutRequest models.CheckoutRequest
+	if err := c.BodyParser(&checkoutRequest); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "Invalid request body",
+		})
+	}
+
+	err := models.UpdateProductQuantity(checkoutRequest)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": "Checkout failed: " + err.Error(),
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"message": "Checkout successful",
+	})
 }

@@ -2,6 +2,7 @@ package router
 
 import (
 	"github.com/aysmdb/ojire-casetiga/app/handlers"
+	"github.com/aysmdb/ojire-casetiga/pkg/middleware"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -16,6 +17,7 @@ func APIRoutes(a *fiber.App) {
 	route.Post("/user/login", handlers.LoginHandler)
 	route.Get("/user/:id", handlers.GetUserByIDHandler)
 
-	route.Post("/cart/add", handlers.AddToCartHandler)
-	route.Get("/cart/:user_id", handlers.GetCartByUserIDHandler)
+	route.Post("/cart/add", middleware.ProtectedRoutes(), handlers.AddToCartHandler)
+	route.Get("/cart", middleware.ProtectedRoutes(), handlers.GetCartByUserIDHandler)
+	route.Post("/cart/checkout", middleware.ProtectedRoutes(), handlers.CheckoutHandler)
 }

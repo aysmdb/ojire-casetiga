@@ -15,6 +15,11 @@ type Product struct {
 	Price    int
 }
 
+type CheckoutRequest struct {
+	ProductID uint `json:"product_id"`
+	Quantity  int  `json:"quantity"`
+}
+
 func GetProductList(page int, take int, search string) []Product {
 	db := database.DBConn
 
@@ -24,7 +29,6 @@ func GetProductList(page int, take int, search string) []Product {
 	} else {
 		db.Where("lower(name) LIKE ?", "%"+strings.ToLower(search)+"%").Offset((page - 1) * take).Limit(take).Find(&products)
 	}
-	
 
 	return products
 }
@@ -35,6 +39,17 @@ func GetProductByID(id int) Product {
 	db.Find(&product, id)
 
 	return product
+}
+
+func UpdateProductQuantity(data CheckoutRequest) error {
+	db := database.DBConn
+	var product Product
+	if err := db.First(&product, data.ProductID).Error; err != nil {
+		return err
+	}
+
+	db.Model(&product).Update("quantity", product.Quantity-data.Quantity)
+	return nil
 }
 
 func SeedProduct() error {
