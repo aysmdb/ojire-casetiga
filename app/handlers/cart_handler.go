@@ -9,7 +9,7 @@ import (
 func AddToCartHandler(c *fiber.Ctx) error {
 	user := c.Locals("user").(*jwt.Token)
 	claims := user.Claims.(jwt.MapClaims)
-	userID := claims["user_id"].(uint)
+	userID := uint(claims["user_id"].(float64))
 
 	r := new(models.CartRequest)
 	if err := c.BodyParser(r); err != nil {
@@ -39,7 +39,7 @@ func AddToCartHandler(c *fiber.Ctx) error {
 func GetCartByUserIDHandler(c *fiber.Ctx) error {
 	user := c.Locals("user").(*jwt.Token)
 	claims := user.Claims.(jwt.MapClaims)
-	userID := claims["user_id"].(uint)
+	userID := uint(claims["user_id"].(float64))
 
 	cartItems, err := models.GetCartByUserID(userID)
 	if err != nil {
@@ -52,14 +52,11 @@ func GetCartByUserIDHandler(c *fiber.Ctx) error {
 }
 
 func CheckoutHandler(c *fiber.Ctx) error {
-	var checkoutRequest models.CheckoutRequest
-	if err := c.BodyParser(&checkoutRequest); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"message": "Invalid request body",
-		})
-	}
+	user := c.Locals("user").(*jwt.Token)
+	claims := user.Claims.(jwt.MapClaims)
+	userID := uint(claims["user_id"].(float64))
 
-	err := models.UpdateProductQuantity(checkoutRequest)
+	err := models.UpdateProductQuantity(userID)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"message": "Checkout failed: " + err.Error(),

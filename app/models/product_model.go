@@ -43,15 +43,21 @@ func GetProductByID(id int) Product {
 	return product
 }
 
-func UpdateProductQuantity(data CheckoutRequest) error {
-	db := database.DBConn
-	var product Product
-	if err := db.First(&product, data.ProductID).Error; err != nil {
-		return err
-	}
+func UpdateProductQuantity(userID uint) error {
+	err := database.DBConn.Transaction(func(tx *gorm.DB) error {
+		var cart []Cart
+		if err := tx.Where("user_id = ?", userID).Find(&cart).Error; err != nil {
+			return err
+		}
 
-	db.Model(&product).Update("quantity", product.Quantity-data.Quantity)
-	return nil
+		for _, data := range cart {
+			tx.Model(&Product{}).Where("id = ?", data.ProductID).Update("quantity", gorm.Expr("quantity - ?", data.Quantity))
+		}
+
+		return nil
+	})
+
+	return err
 }
 
 func SeedProduct() error {

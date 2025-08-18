@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container" x-data>
   <header
     class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom"
   >
@@ -23,9 +23,18 @@
       <li><a href="#" class="nav-link px-2">About</a></li>
     </ul>
     <div class="col-md-3 text-end">
-      <a href="/login" class="btn btn-outline-primary me-2">Login</a>
-      <!-- <button type="button" class="btn btn-outline-primary me-2">Login</button> -->
-      <button type="button" class="btn btn-primary">Sign-up</button>
+      <!-- <a href="/login" class="btn btn-outline-primary me-2">Login</a> -->
+      <button
+        type="button"
+        class="btn btn-outline-primary me-2"
+        data-bs-toggle="modal"
+        data-bs-target="#staticBackdrop"
+        x-show="!$store.auth.token"
+      >
+        Login
+      </button>
+      <button type="button" class="btn btn-primary" x-show="$store.auth.token != null">Cart (0)</button>
+      <button type="button" class="btn btn-danger" x-show="$store.auth.token != null">Logout</button>
     </div>
   </header>
 </div>

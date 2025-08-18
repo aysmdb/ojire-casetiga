@@ -15,9 +15,8 @@ func APIRoutes(a *fiber.App) {
 	route.Get("/product/:id", handlers.GetProductByID)
 
 	route.Post("/user/login", handlers.LoginHandler)
-	route.Get("/user/:id", handlers.GetUserByIDHandler)
 
 	route.Post("/cart/add", middleware.ProtectedRoutes(), handlers.AddToCartHandler)
-	route.Get("/cart", middleware.ProtectedRoutes(), handlers.GetCartByUserIDHandler)
+	route.Get("/cart/list", middleware.ProtectedRoutes(), handlers.GetCartByUserIDHandler)
 	route.Post("/cart/checkout", middleware.ProtectedRoutes(), handlers.CheckoutHandler)
 }

@@ -2,16 +2,9 @@
   <div class="container">
     <div
       class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3"
-      x-data="{
-        products: [],
-        async fetchProducts() {
-          const response = await fetch('/api/product/list');
-          this.products = await response.json();
-        }
-      }"
-      x-init="fetchProducts"
+      id="productList"
     >
-      <template x-for="p in products" :key="p.ID">
+      <template id="productItem">
         <div class="col">
           <div class="card shadow-sm">
             <img
@@ -19,12 +12,11 @@
               :src="p.ImageURL"
               width="100%"
               height="225"
-              alt="Product Image" />
+              alt="Product Image"
+            />
             <div class="card-body">
-              <h5 x-text="p.name"></h5>
-              <p class="card-text">
-                Rp. <span x-text="p.price"></span>
-              </p>
+              <h5 class="productName"></h5>
+              <p class="card-text">Rp. <span x-text="p.price"></span></p>
               <div class="d-flex justify-content-between align-items-center">
                 <div class="btn-group">
                   <button
@@ -34,7 +26,9 @@
                     Add to Cart
                   </button>
                 </div>
-                <small class="text-body-secondary" >Stok: <strong x-text="p.quantity"></strong></small>
+                <small class="text-body-secondary"
+                  >Stok: <strong x-text="p.quantity"></strong
+                ></small>
               </div>
             </div>
           </div>
@@ -43,3 +37,24 @@
     </div>
   </div>
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", async function() {
+      const response = await fetch('/api/product/list');
+      const products = await response.json();
+
+      const productList = document.getElementById('productList');
+      const productItemTemplate = document.getElementById('productItem').innerHTML;
+
+      for (const p of products) {
+        const productItem = document.createElement('div');
+        productItem.innerHTML = productItemTemplate;
+        productItem.querySelector('h5').textContent = p.name;
+        productItem.querySelector('img').src = p.ImageURL;
+        productItem.querySelector('span').textContent = p.price;
+        productItem.querySelector('strong').textContent = p.quantity;
+
+        productList.appendChild(productItem);
+      }
+  });
+</script>
